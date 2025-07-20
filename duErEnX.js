@@ -79,10 +79,11 @@ function setup() {
 }
 
 function createElements() {
-  // Opret input element og gem reference
+  // Opret input element
   inputElement = createInput('');
   inputElement.attribute('placeholder', 'Indtast et navn...');
   inputElement.parent('ui-container');
+  inputElement.addClass('name-input');
   
   // Tilføj event listener for Enter-tasten
   inputElement.elt.addEventListener('keypress', function(e) {
@@ -91,32 +92,84 @@ function createElements() {
     }
   });
   
+  // Opret knap container
+  let btnContainer = createDiv();
+  btnContainer.parent('ui-container');
+  btnContainer.addClass('button-container');
+  
   // Opret generer-knap
   let generateBtn = createButton('Generer');
-  generateBtn.parent('ui-container');
+  generateBtn.parent(btnContainer);
   generateBtn.mousePressed(generateCharacter);
   
-  // Lydkontroller
+  // Tilføj tilfældigt navn knap
+  let randomNameBtn = createButton('Tilfældigt Navn');
+  randomNameBtn.parent(btnContainer);
+  randomNameBtn.id('random-name');
+  randomNameBtn.mousePressed(function() {
+    generateRandomName();
+    generateCharacter();
+  });
+  
+  // Lydkontroller container
+  let audioContainer = createDiv();
+  audioContainer.parent('ui-container');
+  audioContainer.addClass('audio-controls');
+  
+  // Musik kontrol
   musikSlider = createSlider(0, 1, 0.5, 0.01);
-  musikSlider.parent('ui-container');
+  musikSlider.parent(audioContainer);
   musikSlider.addClass('audio-slider');
   
   musikMuteBtn = createButton("Mute Musik");
-  musikMuteBtn.parent('ui-container');
+  musikMuteBtn.parent(audioContainer);
   musikMuteBtn.mousePressed(toggleMusikMute);
   
+  // Effekt kontrol
   effektSlider = createSlider(0, 1, 0.5, 0.01);
-  effektSlider.parent('ui-container');
+  effektSlider.parent(audioContainer);
   effektSlider.addClass('audio-slider');
   
   effektMuteBtn = createButton("Mute Effekt");
-  effektMuteBtn.parent('ui-container');
+  effektMuteBtn.parent(audioContainer);
   effektMuteBtn.mousePressed(toggleEffektMute);
 }
 
-function processDynamicValue(value, køn) {
-  if (typeof value === 'string' && value.includes('{køn}')) {
-    return value.replace(/{køn}/g, køn);
+function generateRandomName() {
+  let fornavn = random(SandhedsDatabase.fornavnList);
+  let efternavn = random(SandhedsDatabase.efternavnList);
+  
+  // 50% chance for at have mellemnavn
+  if (random() < 0.5) {
+    let mellemnavn1 = random(SandhedsDatabase.mellemnavnList);
+    
+    // 5% chance for at have 2 mellemnavne
+    if (random() < 0.05) {
+      let mellemnavn2;
+      do {
+        mellemnavn2 = random(SandhedsDatabase.mellemnavnList);
+      } while (mellemnavn2 === mellemnavn1); // Sikre de er forskellige
+      
+      inputElement.value(`${fornavn} ${mellemnavn1} ${mellemnavn2} ${efternavn}`);
+      return `${fornavn} ${mellemnavn1} ${mellemnavn2} ${efternavn}`;
+    } else {
+      inputElement.value(`${fornavn} ${mellemnavn1} ${efternavn}`);
+      return `${fornavn} ${mellemnavn1} ${efternavn}`;
+    }
+  } else {
+    inputElement.value(`${fornavn} ${efternavn}`);
+    return `${fornavn} ${efternavn}`;
+  }
+}
+
+function processDynamicValue(value, køn, race) {
+  if (typeof value !== 'string') return value;
+  
+  if (value.includes('{køn}')) {
+    value = value.replace(/{køn}/g, køn);
+  }
+  if (value.includes('{race}')) {
+    value = value.replace(/{race}/g, race);
   }
   return value;
 }
@@ -226,26 +279,28 @@ function generateCharacterData(seedInput) {
   }
 
   let køn = random(SandhedsDatabase.kønList);
+  let race = random(SandhedsDatabase.raceList);
   
   // Process job
   let job = random(SandhedsDatabase.jobList);
-  job = processDynamicValue(job, køn);
-  
-  // Process race
-  let race = random(SandhedsDatabase.raceList);
+  job = processDynamicValue(job, køn, race);
   
   // Process personlighed
   let personlighed = random(SandhedsDatabase.personlighedList);
-  personlighed = processDynamicValue(personlighed, køn);
+  personlighed = processDynamicValue(personlighed, køn, race);
   
   // Process sex orientation
   let sexOri = random(SandhedsDatabase.sexOriList);
-  sexOri = processDynamicValue(sexOri, køn);
+  sexOri = processDynamicValue(sexOri, køn, race);
   
   // Process turn ons/offs
   let shuffledTurnOnOff = shuffle(SandhedsDatabase.turnOnOffList);
-  let turnOns = shuffledTurnOnOff.slice(0, 3).map(item => processDynamicValue(item, køn));
-  let turnOffs = shuffledTurnOnOff.slice(3, 6).map(item => processDynamicValue(item, køn));
+  let turnOns = shuffledTurnOnOff.slice(0, 3).map(item => processDynamicValue(item, køn, race));
+  let turnOffs = shuffledTurnOnOff.slice(3, 6).map(item => processDynamicValue(item, køn, race));
+
+  // Process musiksmag
+  let musiksmag = random(SandhedsDatabase.musiksmagList);
+  musiksmag = processDynamicValue(musiksmag, køn, race);
 
   // Process other attributes
   let humør = random(SandhedsDatabase.humørList);
@@ -259,6 +314,9 @@ function generateCharacterData(seedInput) {
   if (højde === "158-211cm") højde = round(random(158, 211)) + "cm";
   let vægt = random(SandhedsDatabase.vægtList);
   let religion = random(SandhedsDatabase.religionList);
+  let fornavn = random(SandhedsDatabase.fornavnList);
+  let mellemnavn = random(SandhedsDatabase.mellemnavnList);
+  let efternavn = random(SandhedsDatabase.efternavnList);
 
   // Process stats
   let styrke = random(SandhedsDatabase.strList);
@@ -283,7 +341,7 @@ function generateCharacterData(seedInput) {
   let shuffledPerks = shuffle(SandhedsDatabase.perkList);
   let selectedPerks = shuffledPerks.slice(0, 2).map(perk => {
     if (perk === "AIDS") return køn + " AIDS";
-    return processDynamicValue(perk, køn);
+    return processDynamicValue(perk, køn, race);
   });
 
   let øjneIndex = floor(random(0, 10));
@@ -313,6 +371,7 @@ function generateCharacterData(seedInput) {
     højde: højde,
     vægt: vægt,
     religion: religion,
+    musiksmag: musiksmag,
     styrke: styrke,
     dex: dex,
     con: con,
@@ -324,9 +383,13 @@ function generateCharacterData(seedInput) {
     næseIndex: næseIndex,
     mundIndex: mundIndex,
     hasRareFace: hasRareFace,
-    rareIndex: rareIndex
+    rareIndex: rareIndex,
+    fornavn: fornavn,
+    mellemnavn: mellemnavn,
+    efternavn: efternavn
   };
 }
+
 
 function displayCharacter(character) {
   resetTextPos();
@@ -350,6 +413,7 @@ function displayCharacter(character) {
   printLine("Højde: " + character.højde);
   printLine("Vægt: " + character.vægt);
   printLine("Religion: " + character.religion);
+  printLine("Musiksmag: " + character.musiksmag);
 
   let statsX = width - 240;
   let statsY = 30;
