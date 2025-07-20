@@ -77,7 +77,7 @@ function draw() {
     displayCharacter(currentCharacter);
   } else {
     fill(0);
-    text("Indtast et navn for at generere en karakter", 10, 30);
+    text("Indtast et navn for at få sandheden", 10, 30);
   }
 
   updateVolumes();

@@ -1,3 +1,6 @@
+1.2.2:
+-Bat til at starte programmet
+
 1.2:
 -Sliders virker nu
 -ReadMe rettet til nye Electron system
