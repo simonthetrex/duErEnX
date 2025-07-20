@@ -1,0 +1,9 @@
+directories:
+  output: dist
+  buildResources: build
+appId: com.valeur.duerenx
+productName: DuErEnX Generator
+win:
+  target: portable
+files: []
+electronVersion: 28.3.3

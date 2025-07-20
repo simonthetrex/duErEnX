@@ -1,45 +1,89 @@
-let input;
+let input, canvas;
 let navn = "";
-let canvas;
-
 let startX = 10;
 let startY = 30;
 let lineHeight = 20;
 let currentY = startY;
 
-function setup() {
-  canvas = createCanvas(min(windowWidth - 40, 800), min(windowHeight - 200, 600));
-  background(225);
+let musik, lyd;
+let musikSlider, effektSlider;
+let musikMuteBtn, effektMuteBtn;
+let musikMuted = false;
+let effektMuted = false;
 
-  input = createInput('');
-  input.input(() => {
-    navn = input.value();
-  });
-
-  input.changed(() => {
-    redraw();
-  });
-
-  noLoop();
-  positionElements();
+function preload() {
+  musik = loadSound("musik.mp3");
+  lyd = loadSound("lyd.mp3");
 }
 
-function positionElements() {
-  canvas.position((windowWidth - width) / 2, 50);
-  input.position(canvas.x + (width - input.width) / 2, canvas.y + height + 10);
+function setup() {
+  canvas = createCanvas(min(windowWidth - 40, 800), min(windowHeight - 250, 600));
+  background(225);
+
+  // Input
+  input = createInput('');
+  input.input(() => navn = input.value());
+  input.changed(() => redraw());
+
+  // Sliders
+  musikSlider = createSlider(0, 1, 0.5, 0.01);
+  effektSlider = createSlider(0, 1, 0.5, 0.01);
+
+  // Mute-knapper
+  musikMuteBtn = createButton("Mute Musik");
+  musikMuteBtn.mousePressed(toggleMusikMute);
+  effektMuteBtn = createButton("Mute Effekt");
+  effektMuteBtn.mousePressed(toggleEffektMute);
+
+  // Positionering
+  positionElements();
+
+  // Musik
+  musik.setVolume(musikSlider.value());
+  musik.loop();
+
+  noLoop();
 }
 
 function draw() {
   if (navn !== "") {
     generateCharacter(navn);
-    noLoop(); // så vi kun tegner én gang
+    noLoop();
   }
+
+  // Opdater lydstyrke live
+  if (!musikMuted) musik.setVolume(musikSlider.value());
+  if (!effektMuted) lyd.setVolume(effektSlider.value());
+}
+
+function positionElements() {
+  const cx = (windowWidth - width) / 2;
+  canvas.position(cx, 50);
+  input.position(cx + (width - input.width) / 2, canvas.y + height + 10);
+
+  musikSlider.position(cx + 20, input.y + 40);
+  musikMuteBtn.position(musikSlider.x + musikSlider.width + 10, musikSlider.y);
+
+  effektSlider.position(cx + 20, musikSlider.y + 30);
+  effektMuteBtn.position(effektSlider.x + effektSlider.width + 10, effektSlider.y);
 }
 
 function windowResized() {
-  resizeCanvas(min(windowWidth - 40, 800), min(windowHeight - 200, 600));
+  resizeCanvas(min(windowWidth - 40, 800), min(windowHeight - 250, 600));
   positionElements();
-  redraw(); // Tegn karakteren igen med nye mål
+  redraw();
+}
+
+function toggleMusikMute() {
+  musikMuted = !musikMuted;
+  musik.setVolume(musikMuted ? 0 : musikSlider.value());
+  musikMuteBtn.html(musikMuted ? "Unmute Musik" : "Mute Musik");
+}
+
+function toggleEffektMute() {
+  effektMuted = !effektMuted;
+  lyd.setVolume(effektMuted ? 0 : effektSlider.value());
+  effektMuteBtn.html(effektMuted ? "Unmute Effekt" : "Mute Effekt");
 }
 
 function resetTextPos() {
@@ -59,6 +103,12 @@ function generateCharacter(seedInput) {
   fill(0);
   text("Navn: " + navn, 10, 10, width, 110);
   resetTextPos();
+
+  // Afspil lydeffekt ved karaktergenerering
+  if (lyd.isLoaded() && !effektMuted) {
+    lyd.stop();
+    lyd.play();
+  }
 
   let kønList = ["Dreng", "Pige", "Ludderen", "Minecraft Mesa Biome", "Virksomhed", "Markeplejer"];
   let køn = random(kønList);

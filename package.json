@@ -1,0 +1,23 @@
+{
+  "name": "duerenx",
+  "version": "1.0.0",
+  "description": "Et p5.js spil med lyd og sjove karakterer",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.valeur.duerenx",
+    "productName": "DuErEnX Generator",
+    "win": {
+      "target": "portable"
+    }
+  },
+  "author": "Simon Valeur Lundberg",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.2.1",
+    "electron-builder": "^24.13.1"
+  }
+}

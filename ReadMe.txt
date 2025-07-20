@@ -1,4 +1,4 @@
-duErEnX 1.0
+duErEnX 1.1
 ==================================
 DETTE ER EN LOVLIGT UDSTEDT KOPI AF DUERENX
 Copyright Simon Valeur Lundberg
