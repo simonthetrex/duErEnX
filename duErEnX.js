@@ -18,7 +18,8 @@ let inputElement;
 let faceParts = {
   øjne: [],
   næse: [],
-  mund: []
+  mund: [],
+  rare: []
 };
 
 function preload() {
@@ -38,6 +39,11 @@ function preloadAnsigtsdele() {
       faceParts[type][i] = loadImage(`assets/ansigt/${type}/${i}.png`);
     }
   });
+  
+  // Indlæs rare billeder
+  for (let i = 0; i < 4; i++) {
+    faceParts.rare[i] = loadImage(`assets/ansigt/rare/${i}.png`);
+  }
 }
 
 function soundLoaded() {
@@ -139,6 +145,11 @@ function drawFaceParts(char) {
   image(faceParts.øjne[char.øjneIndex], x, y);
   image(faceParts.næse[char.næseIndex], x, y);
   image(faceParts.mund[char.mundIndex], x, y);
+  
+  // 1/200 chance for at vise et rare billede
+  if (char.hasRareFace) {
+    image(faceParts.rare[char.rareIndex], x, y);
+  }
 }
 
 function updateVolumes() {
@@ -278,6 +289,10 @@ function generateCharacterData(seedInput) {
   let øjneIndex = floor(random(0, 10));
   let næseIndex = floor(random(0, 10));
   let mundIndex = floor(random(0, 10));
+  
+  // 1/200 chance for rare face
+  let hasRareFace = random() < 0.005; // 0.005 = 1/200
+  let rareIndex = hasRareFace ? floor(random(0, 4)) : null;
 
   return {
     navn: seedInput,
@@ -308,6 +323,8 @@ function generateCharacterData(seedInput) {
     øjneIndex: øjneIndex,
     næseIndex: næseIndex,
     mundIndex: mundIndex,
+    hasRareFace: hasRareFace,
+    rareIndex: rareIndex
   };
 }
 
@@ -346,7 +363,82 @@ function displayCharacter(character) {
   text("Visdom: " + character.wis, statsX, statsY + 4 * lineHeight);
   text("Karisma: " + character.cha, statsX, statsY + 5 * lineHeight);
   text("Perks: " + character.perks.join(", "), statsX, statsY + 6 * lineHeight);
+  
+  // Vis en besked hvis de har en rare face
+  if (character.hasRareFace) {
+    let rareText = "✨ RARE FACE ✨";
+    let rareY = statsY + 8 * lineHeight;
+    let textW = textWidth(rareText);
+    
+    // Tegn outline (sort tekst 8 gange omkring)
+    fill(0);
+    for (let x = -2; x <= 2; x++) {
+      for (let y = -2; y <= 2; y++) {
+        if (x !== 0 || y !== 0) {
+          text(rareText, statsX + x, rareY + y);
+        }
+      }
+    }
+    
+    // Tegn hovedteksten (guld) ovenpå
+    fill(255, 215, 0);
+    text(rareText, statsX, rareY);
+    
+    // Tegn stjerner med langsom, elegant animation
+    noStroke();
+    
+    // Store faste stjerner i hjørnerne
+    fill(255, 255, 200, 200);
+    drawStar(statsX - 15, rareY - 8, 10, 5, 5);
+    drawStar(statsX + textW + 15, rareY - 8, 10, 5, 5);
+    
+    // Animation af mindre stjerner
+    let animFactor = sin(frameCount * 0.03) * 0.5 + 0.5; // 0-1 glat bølge
+    
+    // Midterstjerne (større animation)
+    fill(255, 255, 200, 150 + animFactor * 100);
+    drawStar(statsX + textW/2, rareY - 12 - animFactor * 4, 8 + animFactor * 2, 4 + animFactor, 5);
+    
+    // Side stjerner (mindre animation)
+    fill(255, 255, 200, 120 + animFactor * 80);
+    drawStar(statsX + textW * 0.25, rareY - 5 - animFactor * 2, 6 + animFactor, 3 + animFactor * 0.5, 5);
+    drawStar(statsX + textW * 0.75, rareY - 5 - animFactor * 2, 6 + animFactor, 3 + animFactor * 0.5, 5);
+  }
 }
+
+// Tegn en stjerne (skal være defineret i globalt scope)
+function drawStar(x, y, radius1, radius2, npoints) {
+  let angle = TWO_PI / npoints;
+  let halfAngle = angle / 2.0;
+  beginShape();
+  for (let a = 0; a < TWO_PI; a += angle) {
+    let sx = x + cos(a) * radius2;
+    let sy = y + sin(a) * radius2;
+    vertex(sx, sy);
+    sx = x + cos(a + halfAngle) * radius1;
+    sy = y + sin(a + halfAngle) * radius1;
+    vertex(sx, sy);
+  }
+  endShape(CLOSE);
+}
+
+// Hjælpefunktion til at tegne en stjerne
+function drawStar(x, y, radius1, radius2, npoints) {
+  let angle = TWO_PI / npoints;
+  let halfAngle = angle / 2.0;
+  beginShape();
+  for (let a = 0; a < TWO_PI; a += angle) {
+    let sx = x + cos(a) * radius2;
+    let sy = y + sin(a) * radius2;
+    vertex(sx, sy);
+    sx = x + cos(a + halfAngle) * radius1;
+    sy = y + sin(a + halfAngle) * radius1;
+    vertex(sx, sy);
+  }
+  endShape(CLOSE);
+}
+
+let starPositions = [];
 
 function hashCode(str) {
   let hash = 0;

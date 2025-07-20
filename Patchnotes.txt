@@ -1,3 +1,6 @@
+1.3.2:
+-Sjældne Ansigter
+
 1.3:
 -Baggrund
 -Ansigter
