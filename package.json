@@ -1,7 +1,7 @@
 {
   "name": "duerenx",
-  "version": "1.0.0",
-  "description": "Et p5.js spil med lyd og sjove karakterer",
+  "version": "1.2.0",
+  "description": "Et værktøj der fortæller sandheden",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

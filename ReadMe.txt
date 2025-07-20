@@ -1,4 +1,4 @@
-duErEnX 1.1
+duErEnX 1.2
 ==================================
 DETTE ER EN LOVLIGT UDSTEDT KOPI AF DUERENX
 Copyright Simon Valeur Lundberg
@@ -6,9 +6,10 @@ Copyright Simon Valeur Lundberg
 
 Guide:
 
-1. Åbn "index.html"
-2. Få sandheden at vide
-3. Overvind alt
+1. Åbn "StartDuErEnX"
+2. Indtast navn
+3. Få sandheden at vide
+4. Overvind alt
 
 ==================================
 

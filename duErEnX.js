@@ -1,5 +1,6 @@
 let input, canvas;
 let navn = "";
+let currentCharacter = null;
 let startX = 10;
 let startY = 30;
 let lineHeight = 20;
@@ -10,53 +11,92 @@ let musikSlider, effektSlider;
 let musikMuteBtn, effektMuteBtn;
 let musikMuted = false;
 let effektMuted = false;
+let soundsLoaded = false;
+let elementsInitialized = false;
 
 function preload() {
-  musik = loadSound("musik.mp3");
-  lyd = loadSound("lyd.mp3");
+  const musikPath = typeof __dirname !== 'undefined' ? __dirname + '/assets/musik.mp3' : 'assets/musik.mp3';
+  const lydPath = typeof __dirname !== 'undefined' ? __dirname + '/assets/lyd.mp3' : 'assets/lyd.mp3';
+  
+  musik = loadSound(musikPath, soundLoaded, soundLoadError);
+  lyd = loadSound(lydPath, soundLoaded, soundLoadError);
+}
+
+function soundLoaded() {
+  if (musik.isLoaded() && lyd.isLoaded()) {
+    soundsLoaded = true;
+    if (elementsInitialized) {
+      musik.setVolume(musikSlider.value());
+      musik.loop();
+    }
+  }
+}
+
+function soundLoadError(err) {
+  console.error("Fejl ved indlæsning af lydfil:", err);
 }
 
 function setup() {
   canvas = createCanvas(min(windowWidth - 40, 800), min(windowHeight - 250, 600));
   background(225);
+  createElements();
+  textSize(14);
+  textFont('Arial');
+  positionElements();
+  elementsInitialized = true;
+  
+  if (soundsLoaded) {
+    musik.setVolume(musikSlider.value());
+    musik.loop();
+  }
+}
 
-  // Input
+function createElements() {
   input = createInput('');
   input.input(() => navn = input.value());
-  input.changed(() => redraw());
+  input.changed(() => {
+    if (navn !== "") {
+      currentCharacter = generateCharacterData(navn);
+      redraw();
+    }
+  });
 
-  // Sliders
   musikSlider = createSlider(0, 1, 0.5, 0.01);
   effektSlider = createSlider(0, 1, 0.5, 0.01);
 
-  // Mute-knapper
   musikMuteBtn = createButton("Mute Musik");
   musikMuteBtn.mousePressed(toggleMusikMute);
   effektMuteBtn = createButton("Mute Effekt");
   effektMuteBtn.mousePressed(toggleEffektMute);
-
-  // Positionering
-  positionElements();
-
-  // Musik
-  musik.setVolume(musikSlider.value());
-  musik.loop();
-
-  noLoop();
 }
 
 function draw() {
-  if (navn !== "") {
-    generateCharacter(navn);
-    noLoop();
+  background(225);
+  
+  if (currentCharacter) {
+    displayCharacter(currentCharacter);
+  } else {
+    fill(0);
+    text("Indtast et navn for at generere en karakter", 10, 30);
   }
 
-  // Opdater lydstyrke live
-  if (!musikMuted) musik.setVolume(musikSlider.value());
-  if (!effektMuted) lyd.setVolume(effektSlider.value());
+  updateVolumes();
+}
+
+function updateVolumes() {
+  if (!soundsLoaded || !elementsInitialized) return;
+  
+  try {
+    if (!musikMuted) musik.setVolume(musikSlider.value());
+    if (!effektMuted) lyd.setVolume(effektSlider.value());
+  } catch (err) {
+    console.error("Fejl ved opdatering af lydstyrke:", err);
+  }
 }
 
 function positionElements() {
+  if (!canvas || !input || !musikSlider || !effektSlider || !musikMuteBtn || !effektMuteBtn) return;
+
   const cx = (windowWidth - width) / 2;
   canvas.position(cx, 50);
   input.position(cx + (width - input.width) / 2, canvas.y + height + 10);
@@ -75,15 +115,17 @@ function windowResized() {
 }
 
 function toggleMusikMute() {
+  if (!soundsLoaded) return;
   musikMuted = !musikMuted;
-  musik.setVolume(musikMuted ? 0 : musikSlider.value());
   musikMuteBtn.html(musikMuted ? "Unmute Musik" : "Mute Musik");
+  updateVolumes();
 }
 
 function toggleEffektMute() {
+  if (!soundsLoaded) return;
   effektMuted = !effektMuted;
-  lyd.setVolume(effektMuted ? 0 : effektSlider.value());
   effektMuteBtn.html(effektMuted ? "Unmute Effekt" : "Mute Effekt");
+  updateVolumes();
 }
 
 function resetTextPos() {
@@ -96,16 +138,10 @@ function printLine(txt, clr = color(0)) {
   currentY += lineHeight;
 }
 
-function generateCharacter(seedInput) {
-  clear();
-  background(225);
+function generateCharacterData(seedInput) {
   randomSeed(hashCode(seedInput));
-  fill(0);
-  text("Navn: " + navn, 10, 10, width, 110);
-  resetTextPos();
-
-  // Afspil lydeffekt ved karaktergenerering
-  if (lyd.isLoaded() && !effektMuted) {
+  
+  if (soundsLoaded && !effektMuted) {
     lyd.stop();
     lyd.play();
   }
@@ -169,36 +205,70 @@ function generateCharacter(seedInput) {
   let shuffledPerks = shuffle(perkList);
   let selectedPerks = shuffledPerks.slice(0, 2);
 
-  printLine("Køn: " + køn);
-  printLine("Job: " + job);
-  printLine("Race: " + race);
-  printLine("Personlighed: " + personlighed);
-  printLine("Sexuel Orientering: " + sexOri);
-  printLine("Turn-ons: " + turnOns.join(", "), color(0, 150, 0));
-  printLine("Turn-offs: " + turnOffs.join(", "), color(150, 0, 0));
-  printLine("Humør: " + humør);
-  printLine("Karakter: " + karakter);
-  printLine("Økonomi: " + øko);
-  printLine("Dyreste eje: " + dyreste);
-  printLine("Fremtid: " + fremtid);
-  printLine("Hår: " + hår);
-  printLine("Tøjstil: " + stil);
-  printLine("Højde: " + højde);
-  printLine("Vægt: " + vægt);
-  printLine("Religion: " + religion);
+  return {
+    navn: seedInput,
+    køn: køn,
+    job: job,
+    race: race,
+    personlighed: personlighed,
+    sexOri: sexOri,
+    turnOns: turnOns,
+    turnOffs: turnOffs,
+    humør: humør,
+    karakter: karakter,
+    øko: øko,
+    dyreste: dyreste,
+    fremtid: fremtid,
+    hår: hår,
+    stil: stil,
+    højde: højde,
+    vægt: vægt,
+    religion: religion,
+    styrke: styrke,
+    dex: dex,
+    con: con,
+    intelligens: intelligens,
+    wis: wis,
+    cha: cha,
+    perks: selectedPerks
+  };
+}
+
+function displayCharacter(character) {
+  resetTextPos();
+  textSize(14);
+  text("Navn: " + character.navn, 10, 10);
+  
+  printLine("Køn: " + character.køn);
+  printLine("Job: " + character.job);
+  printLine("Race: " + character.race);
+  printLine("Personlighed: " + character.personlighed);
+  printLine("Sexuel Orientering: " + character.sexOri);
+  printLine("Turn-ons: " + character.turnOns.join(", "), color(0, 150, 0));
+  printLine("Turn-offs: " + character.turnOffs.join(", "), color(150, 0, 0));
+  printLine("Humør: " + character.humør);
+  printLine("Karakter: " + character.karakter);
+  printLine("Økonomi: " + character.øko);
+  printLine("Dyreste eje: " + character.dyreste);
+  printLine("Fremtid: " + character.fremtid);
+  printLine("Hår: " + character.hår);
+  printLine("Tøjstil: " + character.stil);
+  printLine("Højde: " + character.højde);
+  printLine("Vægt: " + character.vægt);
+  printLine("Religion: " + character.religion);
 
   let statsX = width - 240;
   let statsY = 30;
   fill(50);
   text("Stats", statsX, 10);
   fill(0);
-  text("Styrke: " + styrke, statsX, statsY);
-  text("Behændighed: " + dex, statsX, statsY + lineHeight);
-  text("Helbred (HP): " + con, statsX, statsY + 2 * lineHeight);
-  text("Intelligens: " + intelligens, statsX, statsY + 3 * lineHeight);
-  text("Visdom: " + wis, statsX, statsY + 4 * lineHeight);
-  text("Karisma: " + cha, statsX, statsY + 5 * lineHeight);
-  text("Perks: " + selectedPerks.join(", "), statsX, statsY + 6 * lineHeight);
+  text("Styrke: " + character.styrke, statsX, statsY);
+  text("Behændighed: " + character.dex, statsX, statsY + lineHeight);
+  text("Helbred (HP): " + character.con, statsX, statsY + 2 * lineHeight);
+  text("Intelligens: " + character.intelligens, statsX, statsY + 3 * lineHeight);
+  text("Visdom: " + character.wis, statsX, statsY + 4 * lineHeight);
+  text("Karisma: " + character.cha, statsX, statsY + 5 * lineHeight);
+  text("Perks: " + character.perks.join(", "), statsX, statsY + 6 * lineHeight);
 }
 
 function hashCode(str) {
