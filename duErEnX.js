@@ -13,13 +13,31 @@ let musikMuted = false;
 let effektMuted = false;
 let soundsLoaded = false;
 let elementsInitialized = false;
+let inputElement;
+
+let faceParts = {
+  øjne: [],
+  næse: [],
+  mund: []
+};
 
 function preload() {
-  const musikPath = typeof __dirname !== 'undefined' ? __dirname + '/assets/musik.mp3' : 'assets/musik.mp3';
-  const lydPath = typeof __dirname !== 'undefined' ? __dirname + '/assets/lyd.mp3' : 'assets/lyd.mp3';
-  
+  // musik
+  const musikPath = 'assets/sfx/musik.mp3';
+  const lydPath = 'assets/sfx/lyd.mp3';
   musik = loadSound(musikPath, soundLoaded, soundLoadError);
   lyd = loadSound(lydPath, soundLoaded, soundLoadError);
+
+  // ansigtsdele
+  preloadAnsigtsdele();
+}
+
+function preloadAnsigtsdele() {
+  ['øjne', 'næse', 'mund'].forEach(type => {
+    for (let i = 0; i < 10; i++) {
+      faceParts[type][i] = loadImage(`assets/ansigt/${type}/${i}.png`);
+    }
+  });
 }
 
 function soundLoaded() {
@@ -37,12 +55,15 @@ function soundLoadError(err) {
 }
 
 function setup() {
+  // Opret canvas i den dedikerede container
+  let canvasContainer = select('#canvas-container');
   canvas = createCanvas(min(windowWidth - 40, 800), min(windowHeight - 250, 600));
+  canvas.parent('canvas-container');
+  
   background(225);
   createElements();
   textSize(14);
   textFont('Arial');
-  positionElements();
   elementsInitialized = true;
   
   if (soundsLoaded) {
@@ -52,26 +73,54 @@ function setup() {
 }
 
 function createElements() {
-  input = createInput('');
-  input.input(() => navn = input.value());
-  input.changed(() => {
-    if (navn !== "") {
-      currentCharacter = generateCharacterData(navn);
-      redraw();
+  // Opret input element og gem reference
+  inputElement = createInput('');
+  inputElement.attribute('placeholder', 'Indtast et navn...');
+  inputElement.parent('ui-container');
+  
+  // Tilføj event listener for Enter-tasten
+  inputElement.elt.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      generateCharacter();
     }
   });
-
+  
+  // Opret generer-knap
+  let generateBtn = createButton('Generer');
+  generateBtn.parent('ui-container');
+  generateBtn.mousePressed(generateCharacter);
+  
+  // Lydkontroller
   musikSlider = createSlider(0, 1, 0.5, 0.01);
-  effektSlider = createSlider(0, 1, 0.5, 0.01);
-
+  musikSlider.parent('ui-container');
+  musikSlider.addClass('audio-slider');
+  
   musikMuteBtn = createButton("Mute Musik");
+  musikMuteBtn.parent('ui-container');
   musikMuteBtn.mousePressed(toggleMusikMute);
+  
+  effektSlider = createSlider(0, 1, 0.5, 0.01);
+  effektSlider.parent('ui-container');
+  effektSlider.addClass('audio-slider');
+  
   effektMuteBtn = createButton("Mute Effekt");
+  effektMuteBtn.parent('ui-container');
   effektMuteBtn.mousePressed(toggleEffektMute);
+}
+
+function processDynamicValue(value, køn) {
+  if (typeof value === 'string' && value.includes('{køn}')) {
+    return value.replace(/{køn}/g, køn);
+  }
+  return value;
 }
 
 function draw() {
   background(225);
+  if (currentCharacter) {
+    drawFaceParts(currentCharacter);
+    displayCharacter(currentCharacter);
+  }
   
   if (currentCharacter) {
     displayCharacter(currentCharacter);
@@ -83,49 +132,60 @@ function draw() {
   updateVolumes();
 }
 
+function drawFaceParts(char) {
+  const x = width - 288;  
+  const y = height - 288; 
+
+  image(faceParts.øjne[char.øjneIndex], x, y);
+  image(faceParts.næse[char.næseIndex], x, y);
+  image(faceParts.mund[char.mundIndex], x, y);
+}
+
 function updateVolumes() {
   if (!soundsLoaded || !elementsInitialized) return;
   
   try {
-    if (!musikMuted) musik.setVolume(musikSlider.value());
-    if (!effektMuted) lyd.setVolume(effektSlider.value());
+    // Opdater kun hvis ikke muted
+    if (!musikMuted) {
+      musik.setVolume(musikSlider.value());
+    }
+    if (!effektMuted) {
+      lyd.setVolume(effektSlider.value());
+    }
   } catch (err) {
     console.error("Fejl ved opdatering af lydstyrke:", err);
   }
 }
 
-function positionElements() {
-  if (!canvas || !input || !musikSlider || !effektSlider || !musikMuteBtn || !effektMuteBtn) return;
-
-  const cx = (windowWidth - width) / 2;
-  canvas.position(cx, 50);
-  input.position(cx + (width - input.width) / 2, canvas.y + height + 10);
-
-  musikSlider.position(cx + 20, input.y + 40);
-  musikMuteBtn.position(musikSlider.x + musikSlider.width + 10, musikSlider.y);
-
-  effektSlider.position(cx + 20, musikSlider.y + 30);
-  effektMuteBtn.position(effektSlider.x + effektSlider.width + 10, effektSlider.y);
-}
-
 function windowResized() {
   resizeCanvas(min(windowWidth - 40, 800), min(windowHeight - 250, 600));
-  positionElements();
   redraw();
 }
 
 function toggleMusikMute() {
   if (!soundsLoaded) return;
+  
   musikMuted = !musikMuted;
   musikMuteBtn.html(musikMuted ? "Unmute Musik" : "Mute Musik");
-  updateVolumes();
+  
+  if (musikMuted) {
+    musik.setVolume(0);
+  } else {
+    musik.setVolume(musikSlider.value());
+  }
 }
 
 function toggleEffektMute() {
   if (!soundsLoaded) return;
+  
   effektMuted = !effektMuted;
   effektMuteBtn.html(effektMuted ? "Unmute Effekt" : "Mute Effekt");
-  updateVolumes();
+  
+  if (effektMuted) {
+    lyd.setVolume(0);
+  } else {
+    lyd.setVolume(effektSlider.value());
+  }
 }
 
 function resetTextPos() {
@@ -138,6 +198,14 @@ function printLine(txt, clr = color(0)) {
   currentY += lineHeight;
 }
 
+function generateCharacter() {
+  navn = inputElement.value();
+  if (navn !== "") {
+    currentCharacter = generateCharacterData(navn);
+    redraw();
+  }
+}
+
 function generateCharacterData(seedInput) {
   randomSeed(hashCode(seedInput));
   
@@ -146,64 +214,70 @@ function generateCharacterData(seedInput) {
     lyd.play();
   }
 
-  let kønList = ["Dreng", "Pige", "Ludderen", "Minecraft Mesa Biome", "Virksomhed", "Markeplejer"];
-  let køn = random(kønList);
+  let køn = random(SandhedsDatabase.kønList);
+  
+  // Process job
+  let job = random(SandhedsDatabase.jobList);
+  job = processDynamicValue(job, køn);
+  
+  // Process race
+  let race = random(SandhedsDatabase.raceList);
+  
+  // Process personlighed
+  let personlighed = random(SandhedsDatabase.personlighedList);
+  personlighed = processDynamicValue(personlighed, køn);
+  
+  // Process sex orientation
+  let sexOri = random(SandhedsDatabase.sexOriList);
+  sexOri = processDynamicValue(sexOri, køn);
+  
+  // Process turn ons/offs
+  let shuffledTurnOnOff = shuffle(SandhedsDatabase.turnOnOffList);
+  let turnOns = shuffledTurnOnOff.slice(0, 3).map(item => processDynamicValue(item, køn));
+  let turnOffs = shuffledTurnOnOff.slice(3, 6).map(item => processDynamicValue(item, køn));
 
-  let jobList = ["Netto", "Ridder", "Luder", "Fransk " + køn, "Arbejdsløs", "Gamer", "Pædagog", "Svindler", "Regøringsdame", "Cykelrytter", "Pornostjerne", "Steffen Brandt"];
-  let raceList = ["God", "Underlegen", "Formula1", "Luddder", "Shrek", "Fed", "Mexico", "Normal"];
-  let personlighedList = ["Emo", "Terrorist", "Lurder-" + køn, "Sigma", "Racist", "Idiot", "Ryan Gosling", "Selvglad"];
-  let sexOriList = ["Dyr", køn, "Alt", "Børn", "Gay", "Stegepander", "Fiktive Kvinder", "Pixels", "Sig selv"];
+  // Process other attributes
+  let humør = random(SandhedsDatabase.humørList);
+  let karakter = random(SandhedsDatabase.karakterList);
+  let øko = random(SandhedsDatabase.økoList);
+  let dyreste = random(SandhedsDatabase.dyresteList);
+  let fremtid = random(SandhedsDatabase.fremtidList);
+  let hår = Math.random() < 0.9 ? random(SandhedsDatabase.hårTypeList) : "Skaldet";
+  let stil = random(SandhedsDatabase.stilList);
+  let højde = random(SandhedsDatabase.højdeList);
+  if (højde === "158-211cm") højde = round(random(158, 211)) + "cm";
+  let vægt = random(SandhedsDatabase.vægtList);
+  let religion = random(SandhedsDatabase.religionList);
 
-  let turnOnOffList = ["Børn", "Store patter", "Rødbedesaft", "Fedme", "Prostituerede-" + køn, "Kage", "Reb", "Pikke", "Lugt", "Furry", "Smerte", "Blonde", "Interacial", "Ost", "Rugbrødsmadder", "Afføring", "Urin", "Blod", "Sæd", "Havenisse", "Frøer", "Risengrød", "Kesha", "Zanzibar", "Øl"];
-  let humørList = ["Luderisk", "Skattesvinder", "Glad", "Psykotisk", "Tissetrængende", "Loden", "Svært Deprimeret", "Liderlig"];
-  let karakterList = ["-3", "00", "02", "4", "7", "10", "12", "Istedgade"];
-  let økoList = ["Mange", "Fattig", "Middelklasse", "Luksusfælden", "Luderisk Økonomi", "Olie-Baron"];
-  let dyresteList = ["Cykel", "Chihuahua", "Toms Guldbar", "Guldbar", "Atlantisk Koloni", "Femboy Maid", "Mælkekarton", "NASA Computer", "PlayStation 3", "Godset"];
-  let fremtidList = ["Død", "Rig", "Luder", "Kedelig", "Politiker", "Hjemløs", "Narkovrag", "Hjemløs og Narkovrag", "Atomfysiker", "Influencer", "Svensker", "Præsident af den demokratiske republik Zimbabwe", "Stuepige", "Aalborg Universitet Medialogi"];
-  let hårTypeList = ["Krøllet", "Glat", "Fedtet", "Langt", "Kort", "Grimt", "Afro", "Luder", "Henningen", "Tagrenden", "Boosie Fade"];
-  let stilList = ["Dårlig", "Luder", "Emo", "Gammel", "Bøsset", "Nøgen", "Elegant", "Cowboy", "Lærer", "Fursuit", "Elgiganten"];
-  let højdeList = [round(random(158, 211)) + "cm", "Dværg", "Gnom", "Rundetårn", "Havenisse", "Basketball", "40.000.000 m", "Giraf", "Christianit", "Langt Højere Bjærge"];
-  let vægtList = ["Usund", "Overvægtig", "Femboy", "Skelet", "Fed", "Gamer", "Helt normal"];
-  let religionList = ["Heden", "Luder", "Flyvende Spaghetti Monster", "Borbon", "Spronk", "Jøde", "Kristen", "Buddhist", "MAGA", "Mortisme"];
+  // Process stats
+  let styrke = random(SandhedsDatabase.strList);
+  if (typeof styrke === "number") styrke = round(random(-1, 20));
+  
+  let dex = random(SandhedsDatabase.dexList);
+  if (typeof dex === "number") dex = round(random(-1, 20));
+  
+  let con = random(SandhedsDatabase.conList);
+  if (typeof con === "number") con = round(random(-1, 20));
+  
+  let intelligens = random(SandhedsDatabase.intList);
+  if (typeof intelligens === "number") intelligens = round(random(-1, 20));
+  
+  let wis = random(SandhedsDatabase.wisList);
+  if (typeof wis === "number") wis = round(random(-1, 20));
+  
+  let cha = random(SandhedsDatabase.chaList);
+  if (typeof cha === "number") cha = round(random(-1, 20));
 
-  let strList = [round(random(-1, 20)), "9000+", "Moskusokse", "Bodybuilder", "Luder"];
-  let dexList = [round(random(-1, 20)), "Rumæner", "Polak", "Cyklende", "Meget Højt Hus"];
-  let conList = [round(random(-1, 20)), "Elefant", "Stenmur", "Dinosaurus"];
-  let intList = [round(random(-1, 20)), "Klog rotter", "Autostol", "OBH Nordica Stavblender", "Venstre håndet"];
-  let wisList = [round(random(-1, 20)), "Troldmand", "Kinesisk", "Undervands gris"];
-  let chaList = [round(random(-1, 20)), "-999", "Rizzler", "Sexy", "Ikke sej"];
+  // Process perks
+  let shuffledPerks = shuffle(SandhedsDatabase.perkList);
+  let selectedPerks = shuffledPerks.slice(0, 2).map(perk => {
+    if (perk === "AIDS") return køn + " AIDS";
+    return processDynamicValue(perk, køn);
+  });
 
-  let perkList = ["Mega diller", "Farveblind", "Diarré", "Kannibal", "Alkoholiker", "Sexy", "Ludoman", "AIDS", køn + " AIDS", "æbel tært", "PERK50", "Autisme"];
-
-  let job = random(jobList);
-  let race = random(raceList);
-  let personlighed = random(personlighedList);
-  let sexOri = random(sexOriList);
-
-  let shuffledTurnOnOff = shuffle(turnOnOffList);
-  let turnOns = shuffledTurnOnOff.slice(0, 3);
-  let turnOffs = shuffledTurnOnOff.slice(3, 6);
-
-  let humør = random(humørList);
-  let karakter = random(karakterList);
-  let øko = random(økoList);
-  let dyreste = random(dyresteList);
-  let fremtid = random(fremtidList);
-  let hår = Math.random() < 0.9 ? random(hårTypeList) : "Skaldet";
-  let stil = random(stilList);
-  let højde = random(højdeList);
-  let vægt = random(vægtList);
-  let religion = random(religionList);
-
-  let styrke = random(strList);
-  let dex = random(dexList);
-  let con = random(conList);
-  let intelligens = random(intList);
-  let wis = random(wisList);
-  let cha = random(chaList);
-
-  let shuffledPerks = shuffle(perkList);
-  let selectedPerks = shuffledPerks.slice(0, 2);
+  let øjneIndex = floor(random(0, 10));
+  let næseIndex = floor(random(0, 10));
+  let mundIndex = floor(random(0, 10));
 
   return {
     navn: seedInput,
@@ -230,7 +304,10 @@ function generateCharacterData(seedInput) {
     intelligens: intelligens,
     wis: wis,
     cha: cha,
-    perks: selectedPerks
+    perks: selectedPerks,
+    øjneIndex: øjneIndex,
+    næseIndex: næseIndex,
+    mundIndex: mundIndex,
   };
 }
 

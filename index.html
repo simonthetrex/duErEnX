@@ -1,24 +1,97 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8" />
-  <title>duErEnX</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>duErEnX - Sandhedsgeneratoren</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+  <script src="SandhedsDatabase.js"></script>
   <script src="duErEnX.js" defer></script>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background: #f4f4f4;
-      font-family: sans-serif;
+      background: url('assets/bg/pattern.png');
+      background-repeat: repeat;
+      font-family: 'Arial', sans-serif;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    header {
+      width: 100%;
+      background-color: rgba(255,255,255,0.9);
+      padding: 15px 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 10;
+      position: relative;
       text-align: center;
     }
+    
+    h1 {
+      margin: 0;
+      color: #222;
+    }
+    
+    #main-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto;
+      position: relative;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
     canvas {
       display: block;
-      margin: 20px auto;
-      border: 1px solid #ccc;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      background-color: white;
+      z-index: 1;
+    }
+    
+    #ui-container {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 20px;
+      background-color: rgba(255,255,255,0.8);
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 2;
+    }
+    
+    footer {
+      width: 100%;
+      padding: 10px 0;
+      background-color: rgba(255,255,255,0.9);
+      text-align: center;
+      color: #666;
+      font-size: 12px;
+      margin-top: auto;
     }
   </style>
 </head>
+<body>
+  <header>
+    <h1>duErEnX Sandhedsgenerator</h1>
+    <p>Indtast et navn for at afsløre sandheden!</p>
+  </header>
+  
+  <div id="main-container">
+    <div id="canvas-container"></div>
+    <div id="ui-container"></div>
+  </div>
+  
+  <footer>
+    <p>- duErEnX -</p>
+  </footer>
+</body>
 </html>

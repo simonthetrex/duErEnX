@@ -1,3 +1,8 @@
+1.3:
+-Baggrund
+-Ansigter
+-Flere tilfældigheder for øget sandhedskvotient
+
 1.2.2:
 -Bat til at starte programmet
 
