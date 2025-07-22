@@ -26,7 +26,12 @@ const SandhedsDatabase = {
     "Steffen Brandt",
     "Kebab-mand",
     "Hestehandler",
-    "Kontanthjælpsmodtager"
+    "Kontanthjælpsmodtager",
+    "Youtuber",
+    "Rapper",
+    "Politiker",
+    "Lærer",
+    "Læge"
   ],
   
   raceList: [
@@ -39,7 +44,8 @@ const SandhedsDatabase = {
     "Mexico",
     "Normal",
     "Kartoffel",
-    "Kina"
+    "Kina",
+    "Alien"
   ],
   
   personlighedList: [
@@ -54,7 +60,8 @@ const SandhedsDatabase = {
     "Mystisk",
     "Macho",
     "Alkoholiker",
-    "Feminist"
+    "Feminist",
+    "Kaotisk"
   ],
   
   sexOriList: [
@@ -99,7 +106,8 @@ const SandhedsDatabase = {
     "Øl",
     "Sokker",
     "Matematik",
-    "Heste"
+    "Heste",
+    "Balloner"
   ],
   
   humørList: [
@@ -152,7 +160,9 @@ const SandhedsDatabase = {
     "Luksusfælden",
     "Luderisk Økonomi",
     "Olie-Baron",
-    "Eurojackpot rig"
+    "Eurojackpot rig",
+    "Gældsslave",
+    "Kviklån Geni"
   ],
   
   dyresteList: [
@@ -167,7 +177,10 @@ const SandhedsDatabase = {
     "PlayStation 3",
     "Godset",
     "Gammel pizza",
-    "En sten"
+    "En sten",
+    "40 Hektare Æbleplantage i Uganda",
+    "2 Snes Guldmønter",
+    "Et dusin tær"
   ],
   
   fremtidList: [
@@ -231,7 +244,8 @@ const SandhedsDatabase = {
     "Giraf",
     "Christianit",
     "Langt Højere Bjærge",
-    "Uendelig"
+    "Uendelig",
+    "23 Skrupel",
   ],
   
   vægtList: [
@@ -245,7 +259,9 @@ const SandhedsDatabase = {
     "Hest",
     "XXX-Large",
     "Underernæret",
-    "Tynd"
+    "Tynd",
+    "4 Unse",
+    "3,4 Centner"
   ],
   
   religionList: [
@@ -288,7 +304,11 @@ const SandhedsDatabase = {
     "Rape",
     "{race} Hip-Hop",
     "{race}-pop",
-    "{race} Rap"
+    "{race} Rap",
+    "Støj",
+    "Opera",
+    "Funk",
+    "Blues"
   ],
 
   strList: [
@@ -297,7 +317,8 @@ const SandhedsDatabase = {
     "Bodybuilder",
     "Luder",
     "Hulk",
-    "Wrestler"
+    "Wrestler",
+    "Baby"
   ],
   
   dexList: [
@@ -326,7 +347,12 @@ const SandhedsDatabase = {
     "OBH Nordica Stavblender",
     "Venstre håndet",
     "WikiPedia",
-    "Kompetent"
+    "Kompetent",
+    "Intelligent",
+    "Gennemsnitlig",
+    "Dum",
+    "Hjerneskadet",
+    "Negativ IQ"
   ],
   
   wisList: [
@@ -335,7 +361,8 @@ const SandhedsDatabase = {
     "Undervands gris",
     "Gådefuld",
     "Kosmisk",
-    "Glemsom"
+    "Glemsom",
+    "Orakel"
   ],
   
   chaList: [
@@ -344,7 +371,8 @@ const SandhedsDatabase = {
     "Sexy",
     "Ikke sej",
     "Skibidi Rizz",
-    "Kedelig"
+    "Kedelig",
+    "Egendomsmægler"
   ],
   
   perkList: [
@@ -361,7 +389,8 @@ const SandhedsDatabase = {
     "Autisme",
     "Svedig",
     "Nærig",
-    "Doven"
+    "Doven",
+    "Uendelig Sæd"
   ],
 
   fornavnList: [
@@ -410,7 +439,12 @@ const SandhedsDatabase = {
     "Pikmer",
     "Kürt",
     "Síf",
-    "Jeppé"
+    "Jeppé",
+    "Ægir",
+    "Håkon",
+    "Sylte",
+    "Ludvig",
+    "Boris"
   ],
 
   mellemnavnList: [
@@ -431,7 +465,8 @@ const SandhedsDatabase = {
     "Rust",
     "Igiliflimut",
     "Fisseprut",
-    "Piromera"
+    "Piromera",
+    "Von Luderstein"
   ],
 
   efternavnList: [
@@ -459,6 +494,10 @@ const SandhedsDatabase = {
     "Fiminit",
     "Luder",
     "Stegosaurus",
-    "Urinitis"
+    "Urinitis",
+    "Xylomispis",
+    "Johnson",
+    "Rigcardtos",
+    "Karlen"
   ]
 };

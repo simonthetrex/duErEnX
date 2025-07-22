@@ -19,7 +19,17 @@ let faceParts = {
   øjne: [],
   næse: [],
   mund: [],
+  hud: [],
   rare: []
+};
+
+// Antal filer i hver mappe (vil blive sat dynamisk)
+let fileCounts = {
+  øjne: 0,
+  næse: 0,
+  mund: 0,
+  hud: 0,
+  rare: 0
 };
 
 function preload() {
@@ -34,16 +44,43 @@ function preload() {
 }
 
 function preloadAnsigtsdele() {
-  ['øjne', 'næse', 'mund'].forEach(type => {
-    for (let i = 0; i < 10; i++) {
-      faceParts[type][i] = loadImage(`assets/ansigt/${type}/${i}.png`);
-    }
+  // For hver kategori i faceParts (inklusive hud)
+  Object.keys(faceParts).forEach(type => {
+    checkFileCount(`assets/ansigt/${type}/`, (count) => {
+      fileCounts[type] = count;
+      
+      for (let i = 0; i < count; i++) {
+        faceParts[type][i] = loadImage(`assets/ansigt/${type}/${i}.png`);
+      }
+    });
   });
+}
+
+// Funktion til at tjekke antallet af filer i en mappe
+function checkFileCount(path, callback) {
+  // Dette er en simpel løsning der antager at filerne er nummererede sekventielt fra 0
+  // En mere robust løsning ville bruge en server-side script eller liste filer via AJAX
   
-  // Indlæs rare billeder
-  for (let i = 0; i < 4; i++) {
-    faceParts.rare[i] = loadImage(`assets/ansigt/rare/${i}.png`);
+  let count = 0;
+  let found = true;
+  
+  // Vi prøver at loade filer indtil vi finder en der ikke eksisterer
+  function checkNext() {
+    loadImage(
+      `${path}${count}.png`,
+      () => {
+        count++;
+        checkNext();
+      },
+      () => {
+        // Fejl - filen findes ikke
+        found = false;
+        callback(count);
+      }
+    );
   }
+  
+  checkNext();
 }
 
 function soundLoaded() {
@@ -194,13 +231,17 @@ function draw() {
 function drawFaceParts(char) {
   const x = width - 288;  
   const y = height - 288; 
+  
+  if (faceParts.hud[char.hudIndex]) {
+    image(faceParts.hud[char.hudIndex], x, y);
+  }
 
   image(faceParts.øjne[char.øjneIndex], x, y);
   image(faceParts.næse[char.næseIndex], x, y);
   image(faceParts.mund[char.mundIndex], x, y);
   
   // 1/200 chance for at vise et rare billede
-  if (char.hasRareFace) {
+  if (char.hasRareFace && faceParts.rare[char.rareIndex]) {
     image(faceParts.rare[char.rareIndex], x, y);
   }
 }
@@ -344,13 +385,15 @@ function generateCharacterData(seedInput) {
     return processDynamicValue(perk, køn, race);
   });
 
-  let øjneIndex = floor(random(0, 10));
-  let næseIndex = floor(random(0, 10));
-  let mundIndex = floor(random(0, 10));
+  // Brug fileCounts til at bestemme de tilfældige indekser
+  let øjneIndex = floor(random(0, fileCounts.øjne));
+  let næseIndex = floor(random(0, fileCounts.næse));
+  let mundIndex = floor(random(0, fileCounts.mund));
+  let hudIndex = floor(random(0, fileCounts.hud));
   
   // 1/200 chance for rare face
-  let hasRareFace = random() < 0.005; // 0.005 = 1/200
-  let rareIndex = hasRareFace ? floor(random(0, 4)) : null;
+  let hasRareFace = random() < 0.005;
+  let rareIndex = hasRareFace ? floor(random(0, fileCounts.rare)) : null;
 
   return {
     navn: seedInput,
@@ -382,6 +425,7 @@ function generateCharacterData(seedInput) {
     øjneIndex: øjneIndex,
     næseIndex: næseIndex,
     mundIndex: mundIndex,
+    hudIndex: hudIndex,
     hasRareFace: hasRareFace,
     rareIndex: rareIndex,
     fornavn: fornavn,

@@ -1,3 +1,10 @@
+1.4.2:
+-Flere ansigtselementer
+-Lettere at lave nye ansigtselementer
+-Farve på ansigtselementer
+-Ansigts farver
+-Mere alt
+
 1.4:
 -Tilfældig navne knap
 -Musiksmag
