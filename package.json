@@ -1,6 +1,6 @@
 {
   "name": "duerenx",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Et værktøj der fortæller sandheden",
   "main": "main.js",
   "scripts": {

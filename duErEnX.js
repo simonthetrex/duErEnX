@@ -358,6 +358,12 @@ function generateCharacterData(seedInput) {
   let fornavn = random(SandhedsDatabase.fornavnList);
   let mellemnavn = random(SandhedsDatabase.mellemnavnList);
   let efternavn = random(SandhedsDatabase.efternavnList);
+  let motto = random(SandhedsDatabase.mottoList);
+  let fobi = random(SandhedsDatabase.fobiList);
+  let synd = random(SandhedsDatabase.syndList);
+  let hemmelighed = random(SandhedsDatabase.hemmelighedList);
+  let kærlighedsstatus = random(SandhedsDatabase.kærlighedsstatusList);
+  let eks = random(SandhedsDatabase.eksList);
 
   // Process stats
   let styrke = random(SandhedsDatabase.strList);
@@ -430,7 +436,13 @@ function generateCharacterData(seedInput) {
     rareIndex: rareIndex,
     fornavn: fornavn,
     mellemnavn: mellemnavn,
-    efternavn: efternavn
+    efternavn: efternavn,
+    motto: motto,
+    fobi: fobi,
+    synd: synd,
+    hemmelighed: hemmelighed,
+    kærlighedsstatus: kærlighedsstatus,
+    eks: eks,
   };
 }
 
@@ -458,6 +470,12 @@ function displayCharacter(character) {
   printLine("Vægt: " + character.vægt);
   printLine("Religion: " + character.religion);
   printLine("Musiksmag: " + character.musiksmag);
+  printLine("Motto: " + character.motto);
+  printLine("Fobi: " + character.fobi);
+  printLine("Synd: " + character.synd);
+  printLine("Hemmelighed: " + character.hemmelighed);
+  printLine("Kærlighedsstatus: " + character.kærlighedsstatus);
+  printLine("Eks: " + character.eks);
 
   let statsX = width - 240;
   let statsY = 30;

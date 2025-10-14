@@ -1,3 +1,14 @@
+1.5:
+-Nye kategorier!
+  * Motto
+  * Fobier
+  * Synder
+  * Hemmelighed
+  * Kærlighed status
+  * Eks'ere
+-Andre små tilføjelser
+-Et hav af nye kreative navne
+
 1.4.2:
 -Flere ansigtselementer
 -Lettere at lave nye ansigtselementer

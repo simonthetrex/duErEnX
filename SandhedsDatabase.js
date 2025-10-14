@@ -8,7 +8,10 @@ const SandhedsDatabase = {
     "Markeplejer",
     "Femboy",
     "Kønsneutral",
-    "Hest"
+    "Hest",
+    "Angrebshelikopter",
+    "Væske",
+    "Flydende"
   ],
   
   jobList: [
@@ -31,7 +34,11 @@ const SandhedsDatabase = {
     "Rapper",
     "Politiker",
     "Lærer",
-    "Læge"
+    "Læge",
+    "Skraldemand",
+    "Intet",
+    "Menneskehandler",
+    "Bager"
   ],
   
   raceList: [
@@ -107,7 +114,11 @@ const SandhedsDatabase = {
     "Sokker",
     "Matematik",
     "Heste",
-    "Balloner"
+    "Balloner",
+    "Puder",
+    "Ækonomisk inflation",
+    "Hænder",
+    "Fremmedsprog"
   ],
   
   humørList: [
@@ -180,7 +191,11 @@ const SandhedsDatabase = {
     "En sten",
     "40 Hektare Æbleplantage i Uganda",
     "2 Snes Guldmønter",
-    "Et dusin tær"
+    "Et dusin tær",
+    "Et antal fingernegle",
+    "Jesu Glock",
+    "Burning Flames Team Captain",
+    "Ghostly Gibus"
   ],
   
   fremtidList: [
@@ -214,7 +229,10 @@ const SandhedsDatabase = {
     "Henningen",
     "Tagrenden",
     "Boosie Fade",
-    "Flettet"
+    "Flettet",
+    "Sexet",
+    "Neon",
+    "Super Saiyan"
   ],
   
   stilList: [
@@ -279,7 +297,9 @@ const SandhedsDatabase = {
     "Ateist",
     "Muslim",
     "Scientology",
-    "Hindu"
+    "Hindu",
+    "Porno",
+    "Gruplen"
   ],
 
   musiksmagList: [
@@ -323,7 +343,7 @@ const SandhedsDatabase = {
   
   dexList: [
     "Rumæner",
-    "Polak",
+    "Polsker",
     "Cyklende",
     "Meget Højt Hus",
     "Ninja",
@@ -362,7 +382,8 @@ const SandhedsDatabase = {
     "Gådefuld",
     "Kosmisk",
     "Glemsom",
-    "Orakel"
+    "Orakel",
+    "Grakkel"
   ],
   
   chaList: [
@@ -441,10 +462,46 @@ const SandhedsDatabase = {
     "Síf",
     "Jeppé",
     "Ægir",
+    "Ødis",
+    "Åse",
     "Håkon",
     "Sylte",
     "Ludvig",
-    "Boris"
+    "Boris",
+    "Kage",
+    "Hentrax",
+    "Ibeke",
+    "Lennart",
+    "Viktor",
+    "Flik",
+    "Monks",
+    "Juhr",
+    "Philip",
+    "Eron",
+    "Jaark",
+    "Hjut",
+    "Rhralnus",
+    "Skjild",
+    "Abinto",
+    "Huvanus",
+    "Kaschpert",
+    "Ondte",
+    "Fætusmus",
+    "Katterinde",
+    "Snut",
+    "Figgurd",
+    "Arkimedes",
+    "Emma",
+    "Ahmed",
+    "Abdi",
+    "Johanna",
+    "Jolanta",
+    "Frida",
+    "Freja",
+    "Agnes",
+    "Josefine",
+    "Stürt",
+    "Benjamås"
   ],
 
   mellemnavnList: [
@@ -466,7 +523,12 @@ const SandhedsDatabase = {
     "Igiliflimut",
     "Fisseprut",
     "Piromera",
-    "Von Luderstein"
+    "Von Luderstein",
+    "Nassen",
+    "Bombemager",
+    "Ræveknep",
+    "Solort",
+    "Anusch"
   ],
 
   efternavnList: [
@@ -498,6 +560,105 @@ const SandhedsDatabase = {
     "Xylomispis",
     "Johnson",
     "Rigcardtos",
-    "Karlen"
-  ]
+    "Karlen",
+    "Flæskefod",
+    "Ikajen",
+    "Morgneborg",
+    "Baaslünnh",
+    "Nassen",
+    "Torvelort",
+    "Wintherflügel",
+    "Bønte",
+    "Pasnuuk",
+    "Fuppenheimer",
+    "Lusmel",
+    "Overbaal",
+    "Ribberkop",
+    "Jåntheus",
+    "Schmeckernacker",
+    "Filmosa",
+    "Knold",
+    "Æpt",
+    "Kildmas",
+    "Aribibold",
+    "Grentegaard",
+    "Smoland",
+    "Burfbo",
+    "Debussy"
+  ],
+
+  mottoList: [
+    "Keep calm and watch Leyo.",
+    "How could he :sob:",
+    "Hvis man deafner så wanker man.",
+    "if it is fish you vort com back hven you ar a bit risher.",
+    "Gok dig glad.",
+    "Orda bitch i fjæs.",
+    "Min næve, går direkte ind i dit ansigt. Din mide.",
+    "Samfundet, yeah yeah yeah yeah yeah yeah, pogsamfund. Samfundet.",
+    "Plante.",
+    "Der er rodet, i mit hovedt.",
+    "Kanye West on da hest.",
+    "Baseball bat, baseball bat, ba-ba-ba-ba-ba-baseball bat.",
+    "Tue din bitch.",
+    "Svenskere er ikke menneskere.",
+    "Nej.",
+    "Det er hvad det er.",
+    "Findes der nogen danske elever på Sukkertoppen Gymnasium?",
+    "Øhhh.",
+    "Jeg når det."
+  ],
+
+  fobiList: [
+    "Bange for duer",
+    "Frygter Edderkopper",
+    "Bange for kvinder",
+    "Får angst af mænd",
+    "Bange for sin egen mor",
+    "Har mareridt om vindmøller",
+    "Hader syltetøj",
+    "Bange for fremmede"
+  ],
+
+  syndList: [
+    "Stjal en kirkeklokke i 2013",
+    "Har solgt sin sjæl for et gavekort",
+    "Sodomi",
+    "Utroskab",
+    "Utroskab med et dyr",
+    "Myrdet paven",
+    "Chikane af mindreårige"
+  ],
+
+  hemmelighedList: [
+    "Mikropenis",
+    "Var med i børne-MGP",
+    "Har en klon i Faxe Ladeplads",
+    "Er hemmeligt medlem af Boybandet 42",
+    "Tror på nisser",
+    "Absurd modermærke",
+    "Glohed racist"
+  ],
+
+  kærlighedsstatusList: [
+    "Single",
+    "Single og stolt",
+    "Optaget",
+    "Det er kompliceret",
+    "I et kompliceret forhold med sig selv",
+    "Gift til internettet",
+    "Hemmeligt gift i Polen"
+  ],
+
+  eksList: [
+    "42Hest",
+    "En præst fra Skjern",
+    "Et stykke vandmelon",
+    "Satan (kort forhold)",
+    "Sin kusine",
+    "En drøm der gik galt",
+    "En mand ved navn Poul",
+    "To serbiske femboys",
+    "Sin højre hånd"
+  ],
 };

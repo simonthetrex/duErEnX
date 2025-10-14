@@ -1,0 +1,7 @@
+Hej Simon (Eller hvem end der læser dette)
+
+Du skal skrive cmd i file exploreren, så den åbner et kommando prompt vindue.
+Her i skal du skrive:
+npm run build
+
+Husk evt. at slette dist. mappen da den har forvoldet problemer før. Tak og farvel.
